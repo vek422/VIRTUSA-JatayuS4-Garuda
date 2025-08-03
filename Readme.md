@@ -336,8 +336,6 @@ npm run dev
 ### Workflow Management
 
 - **Assessment Pipeline**: End-to-end candidate evaluation workflow
-- **Caching System**: Redis-based caching for improved performance (`cached_ai_service.py`, `cached_test_service.py`)
-- **Notification System**: Automated candidate communication
 
 > **Note**: Screenshots and detailed functionality demos will be provided separately for evaluation purposes.
 
@@ -353,7 +351,11 @@ The application provides comprehensive API documentation through **Swagger UI**:
 
 ### Demo Video
 
-Watch the complete application walkthrough: [AI_QUIZ Demo Video](https://www.youtube.com/watch?v=EHdonrPPtoI)
+Watch the complete application walkthrough:
+
+[![AI_QUIZ Demo Video](https://img.youtube.com/vi/EHdonrPPtoI/maxresdefault.jpg)](https://www.youtube.com/watch?v=EHdonrPPtoI)
+
+_Click the image above to watch the full demo video_
 
 ### Dashboard & Management
 
