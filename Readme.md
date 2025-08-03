@@ -1,12 +1,12 @@
 # AI_QUIZ - Intelligent MCQ Generation and Assessment Chatbot
 
-## 📋 Problem Statement
+## Problem Statement
 
 **Intelligent MCQ Generation and Assessment Chatbot**
 
 To streamline and enhance the interview process by leveraging artificial intelligence to automatically generate and administer skill-based multiple-choice questions (MCQs) through a chatbot interface.
 
-## 🎯 Description
+## Description
 
 This project implements an AI-powered assessment platform that includes:
 
@@ -16,7 +16,7 @@ This project implements an AI-powered assessment platform that includes:
 - **Skill-Based Reporting**: Produces detailed reports ranking candidates based on their skill performance
 - **Optional Face Capture**: Ensures identity verification by capturing candidates' faces during mock tests
 
-## 🏗️ Architecture
+## Architecture
 
 This application consists of:
 
@@ -25,7 +25,7 @@ This application consists of:
 - **AI Integration**: OpenAI integration for intelligent question generation
 - **Real-time Communication**: WebSocket support for live interactions
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before running this application, ensure you have the following installed:
 
@@ -37,7 +37,7 @@ Before running this application, ensure you have the following installed:
 
 > **Note**: Detailed package dependencies are listed in `backend/requirements.txt` and `frontend/package.json`
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the Repository
 
@@ -160,48 +160,243 @@ brew services start redis
 sudo systemctl start redis-server
 ```
 
-## 🔥 Running the Application
+## Running the Application
 
-### Backend Services (Start in this order)
+> **⚠️ CRITICAL**: Follow this exact order and ensure each service starts successfully before proceeding to the next step. Each service must be running in a separate terminal window.
 
-#### 1. Start Redis Server
+### Prerequisites Check
 
-Ensure Redis is running (see Redis Setup section above)
+Before starting, verify these are running:
 
-#### 2. Start Celery Worker
+- ✅ PostgreSQL server is running and databases (`ai_quiz_db`, `test_persist_langgraph`) exist
+- ✅ Redis server is running
+- ✅ All environment variables are properly configured in `.env` files
+
+### Step-by-Step Startup Process
+
+#### Terminal 1: Start Redis Server
+
+```bash
+# Verify Redis is running first
+redis-cli ping
+# Expected output: PONG
+
+# If Redis is not running, start it:
+# Windows: redis-server
+# macOS: brew services start redis
+# Linux: sudo systemctl start redis-server
+```
+
+#### Terminal 2: Activate Python Environment & Start Celery Worker
 
 ```bash
 cd backend
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
+# Start Celery worker (MUST see "ready" message)
 celery -A celery_app worker --loglevel=info
+
+# ✅ Wait for: "[INFO/MainProcess] Connected to redis://localhost:6379//"
+# ✅ Wait for: "[INFO/MainProcess] mingle: searching for available nodes..."
+# ✅ Wait for: "[INFO/MainProcess] mingle: all alone"
+# ✅ Wait for: "[INFO/MainProcess] celery@<hostname> ready."
 ```
 
-#### 3. Start Scheduler
+#### Terminal 3: Start Scheduler (Background Tasks)
 
 ```bash
 cd backend
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
+# Start scheduler
 python scheduler.py
+
+# ✅ Wait for: "Scheduler started successfully"
 ```
 
-#### 4. Start FastAPI Backend
+#### Terminal 4: Start FastAPI Backend
 
 ```bash
 cd backend
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
+# Start main application
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# ✅ Wait for: "Application startup complete."
+# ✅ Wait for: "Uvicorn running on http://0.0.0.0:8000"
 ```
 
-### Frontend
-
-#### Start React Development Server
+#### Terminal 5: Start Frontend
 
 ```bash
 cd frontend
+
+# Start React development server
+npm run dev
+
+# ✅ Wait for: "Local:   http://localhost:5173/"
+# ✅ Wait for: "ready in [time]ms"
+```
+
+### Access the Application
+
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs (Swagger UI)
+- **API Health Check**: http://localhost:8000/health (should return 200 OK)
+
+### Verification Steps
+
+1. **Backend Health Check**: Visit http://localhost:8000/health
+2. **API Documentation**: Visit http://localhost:8000/docs - you should see Swagger UI
+3. **Frontend**: Visit http://localhost:5173 - application should load
+4. **Database Connection**: Check terminal outputs for database connection confirmations
+5. **Celery Worker**: Verify Celery worker shows "ready" status in terminal
+
+### ⚠️ Common Issues & Solutions
+
+#### Issue: "Connection refused" errors
+
+- **Solution**: Ensure PostgreSQL and Redis are running before starting backend services
+
+#### Issue: "Database does not exist"
+
+- **Solution**: Run database creation commands and initialization scripts:
+
+```bash
+cd backend
+python setup_database.py
+python validate_database.py
+```
+
+#### Issue: "Module not found" errors
+
+- **Solution**: Ensure virtual environment is activated and dependencies are installed:
+
+```bash
+cd backend
+venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+```
+
+#### Issue: Celery worker not connecting
+
+- **Solution**: Verify Redis is running and accessible:
+
+```bash
+redis-cli ping  # Should return PONG
+```
+
+#### Issue: Frontend not loading
+
+- **Solution**: Ensure Node.js dependencies are installed:
+
+```bash
+cd frontend
+npm install
 npm run dev
 ```
 
-### 🌐 Access the Application
+> **🚨 IMPORTANT**: Do NOT proceed to the next step until you see the success messages mentioned above. Each service must be fully operational before starting the next one.
 
-- **Frontend**: http://localhost:5173 (Vite default port)
-- **Backend API**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs (Swagger UI)
+## Key Features
 
-> **Important**: Start all backend services (Redis, Celery, Scheduler) before starting the main FastAPI application to ensure full functionality.
+### AI-Powered Assessment System
+
+- **LangGraph Integration**: Advanced AI workflow management with the following service components:
+  - `ai_screening_service.py` - Automated candidate screening
+  - `mcq_generation/` - Dynamic MCQ creation based on job requirements
+  - `resume_parsing/` - Intelligent resume analysis
+  - `resume_screening/` - AI-driven candidate evaluation
+  - `skill_graph_generation/` - Dynamic skill assessment graphs
+  - `report_generation/` - Automated assessment reports
+
+### Background Processing
+
+- **Bulk Candidate Upload**: Asynchronous processing of multiple candidate applications using Celery
+- **Real-time Assessment**: WebSocket-based live assessment sessions
+- **Scheduled Tasks**: Automated report generation and candidate notifications
+
+### Workflow Management
+
+- **Assessment Pipeline**: End-to-end candidate evaluation workflow
+- **Caching System**: Redis-based caching for improved performance (`cached_ai_service.py`, `cached_test_service.py`)
+- **Notification System**: Automated candidate communication
+
+> **Note**: Screenshots and detailed functionality demos will be provided separately for evaluation purposes.
+
+## API Documentation
+
+The application provides comprehensive API documentation through **Swagger UI**:
+
+- **Interactive API Docs**: http://localhost:8000/docs
+- Test endpoints directly from the browser
+- View request/response schemas and authentication requirements
+
+## Screenshots
+
+### Demo Video
+
+Watch the complete application walkthrough: [AI_QUIZ Demo Video](https://www.youtube.com/watch?v=EHdonrPPtoI)
+
+### Dashboard & Management
+
+#### Recruiter Dashboard
+
+![Recruiter Dashboard](assets/recruiter_dashboard.png)
+
+#### Test Dashboard
+
+![Test Dashboard](assets/test_dashboard.png)
+
+#### Tests Overview Page
+
+![Tests Page](assets/Tests_Page.png)
+
+### Test Management
+
+#### Test Creation Interface
+
+![Test Creation Page](assets/test_creation_page.png)
+
+#### Test Candidates Management
+
+![Test Candidates](assets/test_candidates.png)
+
+### Reports & Analytics
+
+#### Assessment Report Overview
+
+![Assessment Report](assets/assessment_report.png)
+
+#### Detailed Candidate Report
+
+![Candidate Report](assets/candidate_report.png)
+
+#### Candidate Performance Analysis
+
+![Candidate Report 2](assets/candidate_report_2.png)
+
+#### Advanced Candidate Metrics
+
+![Candidate Report 3](assets/candidate_report_3.png)
+
+#### AI-Generated Skill Graph
+
+![Skill Graph](assets/skill_graph.png)
