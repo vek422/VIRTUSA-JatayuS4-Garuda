@@ -7,7 +7,6 @@ import asyncio
 import json
 import logging
 from langgraph.types import Command
-from langchain_core.runnables import RunnableConfig
 from datetime import datetime
 from typing import Dict, Optional, Any, List, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -101,11 +100,11 @@ class AssessmentGraphService:
             graph = await self._get_graph()
 
             # Check if graph already has state for this thread_id
-            config = RunnableConfig(
-                configurable={"thread_id": thread_id}
-            )
+            config = {
+                "configurable": {"thread_id": thread_id}
+            }
 
-            existing_state = await graph.aget_state(config)
+            existing_state = await graph.aget_state(config)  # type:ignore
             if existing_state.values:
                 logger.info(
                     f"Found existing graph state for thread {thread_id}, recovering")
@@ -174,9 +173,9 @@ class AssessmentGraphService:
         """
         try:
             graph = await self._get_graph()
-            config = RunnableConfig(
-                configurable={"thread_id": thread_id}
-            )
+            config = {
+                "configurable": {"thread_id": thread_id}
+            }
 
             state = await graph.aget_state(config)
             if state.values:
@@ -205,9 +204,9 @@ class AssessmentGraphService:
                 return None
 
             graph = await self._get_graph()
-            config = RunnableConfig(
-                configurable={"thread_id": thread_id}
-            )
+            config = {
+                "configurable": {"thread_id": thread_id}
+            }
 
             # Check current state
             current_state = await graph.aget_state(config)
@@ -283,9 +282,9 @@ class AssessmentGraphService:
                 return None
 
             graph = await self._get_graph()
-            config = RunnableConfig(
-                configurable={"thread_id": thread_id}
-            )
+            config = {
+                "configurable": {"thread_id": thread_id}
+            }
 
             # Verify question exists
             current_state = await graph.aget_state(config)
@@ -382,9 +381,9 @@ class AssessmentGraphService:
                 return None
 
             graph = await self._get_graph()
-            config = RunnableConfig(
-                configurable={"thread_id": thread_id}
-            )
+            config = {
+                "configurable": {"thread_id": thread_id}
+            }
 
             updated_state = await graph.aget_state(config)
 
@@ -421,9 +420,9 @@ class AssessmentGraphService:
         try:
 
             graph = await self._get_graph()
-            config = RunnableConfig(
-                configurable={"thread_id": thread_id}
-            )
+            config = {
+                "configurable": {"thread_id": thread_id}
+            }
 
             state = await graph.aget_state(config)
             serialized_state = json.loads(
@@ -463,7 +462,9 @@ class AssessmentGraphService:
 
             # Extract state from graph
             graph = await self._get_graph()
-            config = RunnableConfig(configurable={"thread_id": thread_id})
+            config = {
+                "configurable": {"thread_id": thread_id}
+            }
             state = await graph.ainvoke(Command(resume={"type": "exit"}), config=config)
 
             state = await graph.aget_state(config)
