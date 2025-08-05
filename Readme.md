@@ -16,6 +16,11 @@ This project implements an AI-powered assessment platform that includes:
 - **Skill-Based Reporting**: Produces detailed reports ranking candidates based on their skill performance
 - **Optional Face Capture**: Ensures identity verification by capturing candidates' faces during mock tests
 
+### Live Deployment
+
+- **Frontend**: [SkillSync Frontend](http://20.193.136.188)
+- **Backend Docs (FastAPI Swagger)**: [API Docs](http://20.193.136.188:8080/docs)
+
 ## Architecture
 
 This application consists of:
