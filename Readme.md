@@ -19,7 +19,7 @@ This project implements an AI-powered assessment platform that includes:
 ### Live Deployment
 
 - **Frontend**: [SkillSync Frontend](http://20.193.136.188)
-- **Backend Docs (FastAPI Swagger)**: [API Docs](http://20.193.136.188:8080/docs)
+- **Backend Docs (FastAPI Swagger)**: [API Docs](http://20.193.136.188:8000/docs)
 
 ## Architecture
 
